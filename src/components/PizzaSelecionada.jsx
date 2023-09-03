@@ -30,7 +30,7 @@ export const Pizza = () => {
             pizza: state.product.title,
             precio: 0,
             ingredientes: [],
-            adicional: 0,
+            adicional: "",
             total: 0,
         }
 
@@ -41,27 +41,8 @@ export const Pizza = () => {
         setIngredientes(e);
     }
 
-    const onClickComprar = () => {
-        onClickTotal();
-        let nombre = document.getElementById("nombre")
-        console.log(nombre.value);
-        if(nombre.value===""){
-            alert("El nombre es un campo requerido")
-        }
-        console.log(ingreMasPrecio);
 
-        let fac = {
-            nombre: "",
-            pizza: state.product.title,
-            precio: 0,
-            ingredientes: [],
-            adicional: 0,
-            total: 0,
-        }
-        console.log(fac);
-        //.innerHTML = `descuento aplicado: ${descuento} %`;
-    }
-    const onClickTotal = () => {
+    const onClickComprar = () => {
         //validar el numero de clientes seleccionados
         if (ingredientes.length === 0) {
             alert("Debe seleccionar al menos un ingrediente");
@@ -135,6 +116,68 @@ export const Pizza = () => {
             setIngreMasPrecio(ingTmp);
         }
 
+    }
+
+    const procesarFactura = () => {
+        let nombre = document.getElementById("nombre")
+
+        if (nombre.value === "") {
+            alert("El nombre es un campo requerido")
+        }
+      
+        let precioIndividual = ingredientes.length >2
+            ? ingreMasPrecio[0].precio
+            : 0;
+        let tmpAdicional = (precioIndividual * ingreMasPrecio.length);
+        let adicional = ingredientes.length >= 3
+            ? ("( " + ingreMasPrecio[0].precio + " * " + ingreMasPrecio.length + " )" + " = $" + tmpAdicional)
+            : "$0"
+
+        let fac = {
+            nombre: nombre.value,
+            pizza: state.product.title,
+            precio: state.product.price,
+            ingredientes: ingredientes.map(e => e.label),
+            adicional: adicional,
+            total: state.product.price + tmpAdicional,
+        }
+        console.log(fac);
+        document.getElementById("factura").innerHTML = `<h2>Cliente: ${fac.nombre}</h2><table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="row"></th>
+                <th scope="col">descripción</th>
+                <th scope="col">precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Pizza seleccionada</td>
+                <td>${fac.pizza}, precio: $${fac.precio} </td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Total de ingredientes adicionales</td>
+                <td>${ingreMasPrecio.length}</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Valor por cada ingrediente adicional</td>
+                <td>$ ${precioIndividual}</td>
+            </tr>
+            <tr>
+                <th scope="row">4</th>
+                <td>Costo adicional</td>
+                <td>${fac.adicional}</td>
+            </tr>
+            <tr>
+                <th scope="row">5</th>
+                <td>Total a cancelar</td>
+                <td>$${fac.total}</td>
+            </tr>
+        </tbody>
+    </table>`;
 
     }
 
@@ -179,8 +222,8 @@ export const Pizza = () => {
 
                                     <br />
                                     <div className="row">
-                                        <div className="col"><button type="submit" className="btn btn-primary text-center mx-auto p-2 m-2 px-4" onClick={onClickTotal}>Calcular Total</button></div>
-                                        <div className="col"><button type="submit" className="btn btn-primary text-center mx-auto p-2 m-2 px-4" onClick={onClickComprar}>Comprar</button></div>
+                                        <div className="col"><h2>Paso 1:</h2><button type="submit" className="btn btn-primary text-center mx-auto p-2 m-2 px-4" onClick={onClickComprar}>1. Calcular Total</button></div>
+                                        <div className="col"><h2>Paso 2:</h2><button type="submit" className="btn btn-primary text-center mx-auto p-2 m-2 px-4" onClick={procesarFactura}>2. Comprar</button></div>
                                     </div>
 
 
@@ -194,9 +237,8 @@ export const Pizza = () => {
 
                 <div className="container p-4 m-4">
                     <div className="card mb-3 p-3" key={state.product.id}>
-                        <h2 className="mx-auto text-center">Factura:
-                       
-                        </h2>
+                        <h2 className="mx-auto text-center">Factura:</h2>
+                        <div className="factura" id="factura"></div>
                     </div>
                 </div>
 
