@@ -15,10 +15,13 @@ export const Pizza = () => {
         { value: 'Albahaca', label: 'Albahaca' },
         { value: 'Piña', label: 'Piña' },
         { value: 'Pepperoni', label: 'Pepperoni' },
-        { value: 'Jamón', label: 'Jamón' }
+        { value: 'Jamón', label: 'Jamón' },
+        { value: 'Pollo', label: 'Pollo' }
     ]
-    //ingredientes seleccionados
+    //todos los ingredientes seleccionados seleccionados
     const [ingredientes, setIngredientes] = useState([]);
+    //ingre
+    const [ingreMasPrecio, setIngreMasPrecio] = useState([]);
 
     //objeto final para factura
     const [factura, setFactura] = useState(
@@ -38,6 +41,26 @@ export const Pizza = () => {
         setIngredientes(e);
     }
 
+    const onClickComprar = () => {
+        onClickTotal();
+        let nombre = document.getElementById("nombre")
+        console.log(nombre.value);
+        if(nombre.value===""){
+            alert("El nombre es un campo requerido")
+        }
+        console.log(ingreMasPrecio);
+
+        let fac = {
+            nombre: "",
+            pizza: state.product.title,
+            precio: 0,
+            ingredientes: [],
+            adicional: 0,
+            total: 0,
+        }
+        console.log(fac);
+        //.innerHTML = `descuento aplicado: ${descuento} %`;
+    }
     const onClickTotal = () => {
         //validar el numero de clientes seleccionados
         if (ingredientes.length === 0) {
@@ -49,58 +72,71 @@ export const Pizza = () => {
         //validar que la cantidad de ingredientes sea mayor a dos para que aplique la logica
         if (cantidadIngredientes > 2) {
             //validar el tipo de pizza selecciona
-
+            let ingTmp = [];
             switch (state.product.id) {
                 case 1: //caso pizza personal
-                    /*
-                        i. El primer ingrediente adicional a $1.00.
-                        ii. Si agregan dos ingredientes adicionales a $0.75 (c/u).
-                        iii. Si se agregan tres ingredientes adicionales a $0.50 (c/u).
-                        iv. Si se agregan más de tres ingredientes adicionales serán a $.0.25 (c/u).   
-                    */
-
                     //iniciar a leer los datos desde el tercer ingrediente
                     for (let index = 2; index < ingredientes.length; index++) {
                         const element = ingredientes[index];
-                        console.log(element);
+
+                        if ((cantidadIngredientes - 2) === 1) {
+                            ingTmp.push({ ingrediente: element.value, precio: 1 })
+                        } else if ((cantidadIngredientes - 2) <= 2) {
+                            ingTmp.push({ ingrediente: element.value, precio: 0.75 })
+                        } else if ((cantidadIngredientes - 2) <= 3) {
+                            ingTmp.push({ ingrediente: element.value, precio: 0.50 })
+                        }
+
+                        if ((cantidadIngredientes - 2) >= 4) {
+                            ingTmp.push({ ingrediente: element.value, precio: 0.25 })
+                        }
                     }
+
                     break;
                 case 2: //caso pizza mediana
-                    /* 
-                        i. El primer ingrediente adicional a $2.00.
-                        ii. Si agregan dos ingredientes adicionales a $1.00 (c/u).
-                        iii. Si se agregan tres ingredientes adicionales a $0.75 (c/u).
-                        iv. Si se agregan más de tres ingredientes adicionales serán a $.0.50 (c/u)
-                     */
-                    
                     //iniciar a leer los datos desde el tercer ingrediente
                     for (let index = 2; index < ingredientes.length; index++) {
                         const element = ingredientes[index];
-                        console.log(element);
+                        if ((cantidadIngredientes - 2) === 1) {
+                            ingTmp.push({ ingrediente: element.value, precio: 2.00 })
+                        } else if ((cantidadIngredientes - 2) <= 2) {
+                            ingTmp.push({ ingrediente: element.value, precio: 1.00 })
+                        } else if ((cantidadIngredientes - 2) <= 3) {
+                            ingTmp.push({ ingrediente: element.value, precio: 0.75 })
+                        }
+
+                        if ((cantidadIngredientes - 2) >= 4) {
+                            ingTmp.push({ ingrediente: element.value, precio: 0.50 })
+                        }
                     }
                     break;
                 case 3: //caso pizza grande
-                    /* 
-                        i. El primer ingrediente adicional a $2.50.
-                        ii. Si agregan dos ingredientes adicionales a $2.00 (c/u).
-                        iii. Si se agregan tres ingredientes adicionales a $1.00 (c/u).
-                        iv. Si se agregan más de tres ingredientes adicionales serán a $.0.75 (c/u).
-                      */
 
-                     //iniciar a leer los datos desde el tercer ingrediente
+                    //iniciar a leer los datos desde el tercer ingrediente
                     for (let index = 2; index < ingredientes.length; index++) {
                         const element = ingredientes[index];
-                        console.log(element);
+                        if ((cantidadIngredientes - 2) === 1) {
+                            ingTmp.push({ ingrediente: element.value, precio: 2.50 })
+                        } else if ((cantidadIngredientes - 2) <= 2) {
+                            ingTmp.push({ ingrediente: element.value, precio: 2.00 })
+                        } else if ((cantidadIngredientes - 2) <= 3) {
+                            ingTmp.push({ ingrediente: element.value, precio: 1.00 })
+                        }
+
+                        if ((cantidadIngredientes - 2) >= 4) {
+                            ingTmp.push({ ingrediente: element.value, precio: 0.75 })
+                        }
                     }
                     break;
 
                 default:
                     break;
             }
+            setIngreMasPrecio(ingTmp);
         }
+
+
     }
-
-
 
 
     return (
@@ -136,13 +172,18 @@ export const Pizza = () => {
                                         />
 
                                     </div>
+                                    <div className="form-group">
+                                        <label htmlFor="">Nombre</label>
+                                        <input type="text" className="form-control" name="nombre" id="nombre" required />
+                                    </div>
 
                                     <br />
-                                    <button type="submit" className="btn btn-primary text-center mx-auto" onClick={onClickTotal}>Calcular Total</button>
-
-                                    <div className="tmpTotal" id="tmpTotal">
-
+                                    <div className="row">
+                                        <div className="col"><button type="submit" className="btn btn-primary text-center mx-auto p-2 m-2 px-4" onClick={onClickTotal}>Calcular Total</button></div>
+                                        <div className="col"><button type="submit" className="btn btn-primary text-center mx-auto p-2 m-2 px-4" onClick={onClickComprar}>Comprar</button></div>
                                     </div>
+
+
                                 </div>
                             </div>
 
@@ -153,7 +194,9 @@ export const Pizza = () => {
 
                 <div className="container p-4 m-4">
                     <div className="card mb-3 p-3" key={state.product.id}>
-                        <h2 className="mx-auto text-center">Información de pago</h2>
+                        <h2 className="mx-auto text-center">Factura:
+                       
+                        </h2>
                     </div>
                 </div>
 
