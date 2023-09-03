@@ -9,7 +9,7 @@ export const Pizza = () => {
     /*extremos el objeto de la pizza seleccionada*/
     let { state } = useLocation();
     const animatedComponents = makeAnimated();
-
+    const [estado, setEstado] = useState("default");
     const options = [
         { value: 'Champiñones', label: 'Champiñones' },
         { value: 'Albahaca', label: 'Albahaca' },
@@ -23,20 +23,6 @@ export const Pizza = () => {
     //ingre
     const [ingreMasPrecio, setIngreMasPrecio] = useState([]);
 
-    //objeto final para factura
-    const [factura, setFactura] = useState(
-        {
-            nombre: "",
-            pizza: state.product.title,
-            precio: 0,
-            ingredientes: [],
-            adicional: "",
-            total: 0,
-        }
-
-
-    );
-
     const onChange = (e) => {
         setIngredientes(e);
     }
@@ -47,138 +33,148 @@ export const Pizza = () => {
         if (ingredientes.length === 0) {
             alert("Debe seleccionar al menos un ingrediente");
         }
+        if (ingredientes.length !== 0) {
+            let cantidadIngredientes = ingredientes.length;
 
-        let cantidadIngredientes = ingredientes.length;
+            //validar que la cantidad de ingredientes sea mayor a dos para que aplique la logica
+            if (cantidadIngredientes > 2) {
+                //validar el tipo de pizza selecciona
+                let ingTmp = [];
+                switch (state.product.id) {
+                    case 1: //caso pizza personal
+                        //iniciar a leer los datos desde el tercer ingrediente
+                        for (let index = 2; index < ingredientes.length; index++) {
+                            const element = ingredientes[index];
 
-        //validar que la cantidad de ingredientes sea mayor a dos para que aplique la logica
-        if (cantidadIngredientes > 2) {
-            //validar el tipo de pizza selecciona
-            let ingTmp = [];
-            switch (state.product.id) {
-                case 1: //caso pizza personal
-                    //iniciar a leer los datos desde el tercer ingrediente
-                    for (let index = 2; index < ingredientes.length; index++) {
-                        const element = ingredientes[index];
+                            if ((cantidadIngredientes - 2) === 1) {
+                                ingTmp.push({ ingrediente: element.value, precio: 1 })
+                            } else if ((cantidadIngredientes - 2) <= 2) {
+                                ingTmp.push({ ingrediente: element.value, precio: 0.75 })
+                            } else if ((cantidadIngredientes - 2) <= 3) {
+                                ingTmp.push({ ingrediente: element.value, precio: 0.50 })
+                            }
 
-                        if ((cantidadIngredientes - 2) === 1) {
-                            ingTmp.push({ ingrediente: element.value, precio: 1 })
-                        } else if ((cantidadIngredientes - 2) <= 2) {
-                            ingTmp.push({ ingrediente: element.value, precio: 0.75 })
-                        } else if ((cantidadIngredientes - 2) <= 3) {
-                            ingTmp.push({ ingrediente: element.value, precio: 0.50 })
+                            if ((cantidadIngredientes - 2) >= 4) {
+                                ingTmp.push({ ingrediente: element.value, precio: 0.25 })
+                            }
                         }
 
-                        if ((cantidadIngredientes - 2) >= 4) {
-                            ingTmp.push({ ingrediente: element.value, precio: 0.25 })
-                        }
-                    }
+                        break;
+                    case 2: //caso pizza mediana
+                        //iniciar a leer los datos desde el tercer ingrediente
+                        for (let index = 2; index < ingredientes.length; index++) {
+                            const element = ingredientes[index];
+                            if ((cantidadIngredientes - 2) === 1) {
+                                ingTmp.push({ ingrediente: element.value, precio: 2.00 })
+                            } else if ((cantidadIngredientes - 2) <= 2) {
+                                ingTmp.push({ ingrediente: element.value, precio: 1.00 })
+                            } else if ((cantidadIngredientes - 2) <= 3) {
+                                ingTmp.push({ ingrediente: element.value, precio: 0.75 })
+                            }
 
-                    break;
-                case 2: //caso pizza mediana
-                    //iniciar a leer los datos desde el tercer ingrediente
-                    for (let index = 2; index < ingredientes.length; index++) {
-                        const element = ingredientes[index];
-                        if ((cantidadIngredientes - 2) === 1) {
-                            ingTmp.push({ ingrediente: element.value, precio: 2.00 })
-                        } else if ((cantidadIngredientes - 2) <= 2) {
-                            ingTmp.push({ ingrediente: element.value, precio: 1.00 })
-                        } else if ((cantidadIngredientes - 2) <= 3) {
-                            ingTmp.push({ ingrediente: element.value, precio: 0.75 })
+                            if ((cantidadIngredientes - 2) >= 4) {
+                                ingTmp.push({ ingrediente: element.value, precio: 0.50 })
+                            }
                         }
+                        break;
+                    case 3: //caso pizza grande
 
-                        if ((cantidadIngredientes - 2) >= 4) {
-                            ingTmp.push({ ingrediente: element.value, precio: 0.50 })
+                        //iniciar a leer los datos desde el tercer ingrediente
+                        for (let index = 2; index < ingredientes.length; index++) {
+                            const element = ingredientes[index];
+                            if ((cantidadIngredientes - 2) === 1) {
+                                ingTmp.push({ ingrediente: element.value, precio: 2.50 })
+                            } else if ((cantidadIngredientes - 2) <= 2) {
+                                ingTmp.push({ ingrediente: element.value, precio: 2.00 })
+                            } else if ((cantidadIngredientes - 2) <= 3) {
+                                ingTmp.push({ ingrediente: element.value, precio: 1.00 })
+                            }
+
+                            if ((cantidadIngredientes - 2) >= 4) {
+                                ingTmp.push({ ingrediente: element.value, precio: 0.75 })
+                            }
                         }
-                    }
-                    break;
-                case 3: //caso pizza grande
+                        break;
 
-                    //iniciar a leer los datos desde el tercer ingrediente
-                    for (let index = 2; index < ingredientes.length; index++) {
-                        const element = ingredientes[index];
-                        if ((cantidadIngredientes - 2) === 1) {
-                            ingTmp.push({ ingrediente: element.value, precio: 2.50 })
-                        } else if ((cantidadIngredientes - 2) <= 2) {
-                            ingTmp.push({ ingrediente: element.value, precio: 2.00 })
-                        } else if ((cantidadIngredientes - 2) <= 3) {
-                            ingTmp.push({ ingrediente: element.value, precio: 1.00 })
-                        }
-
-                        if ((cantidadIngredientes - 2) >= 4) {
-                            ingTmp.push({ ingrediente: element.value, precio: 0.75 })
-                        }
-                    }
-                    break;
-
-                default:
-                    break;
+                    default:
+                        break;
+                }
+                setIngreMasPrecio(ingTmp);
             }
-            setIngreMasPrecio(ingTmp);
+            setEstado("facturado")
         }
+
 
     }
 
     const procesarFactura = () => {
         let nombre = document.getElementById("nombre")
 
-        if (nombre.value === "") {
-            alert("El nombre es un campo requerido")
-        }
-      
-        let precioIndividual = ingredientes.length >2
-            ? ingreMasPrecio[0].precio
-            : 0;
-        let tmpAdicional = (precioIndividual * ingreMasPrecio.length);
-        let adicional = ingredientes.length >= 3
-            ? ("( " + ingreMasPrecio[0].precio + " * " + ingreMasPrecio.length + " )" + " = $" + tmpAdicional)
-            : "$0"
+        if (estado === "facturado") {
 
-        let fac = {
-            nombre: nombre.value,
-            pizza: state.product.title,
-            precio: state.product.price,
-            ingredientes: ingredientes.map(e => e.label),
-            adicional: adicional,
-            total: state.product.price + tmpAdicional,
-        }
-        console.log(fac);
-        document.getElementById("factura").innerHTML = `<h2>Cliente: ${fac.nombre}</h2><table class="table">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="row"></th>
-                <th scope="col">descripción</th>
-                <th scope="col">precio</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Pizza seleccionada</td>
-                <td>${fac.pizza}, precio: $${fac.precio} </td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Total de ingredientes adicionales</td>
-                <td>${ingreMasPrecio.length}</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Valor por cada ingrediente adicional</td>
-                <td>$ ${precioIndividual}</td>
-            </tr>
-            <tr>
-                <th scope="row">4</th>
-                <td>Costo adicional</td>
-                <td>${fac.adicional}</td>
-            </tr>
-            <tr>
-                <th scope="row">5</th>
-                <td>Total a cancelar</td>
-                <td>$${fac.total}</td>
-            </tr>
-        </tbody>
-    </table>`;
+            if (nombre.value === "") {
+                alert("El nombre es un campo requerido")
+            }
+            if (nombre.value !== "") {
+                let precioIndividual = ingredientes.length > 2
+                    ? ingreMasPrecio[0].precio
+                    : 0;
+                let tmpAdicional = (precioIndividual * ingreMasPrecio.length);
+                let adicional = ingredientes.length >= 3
+                    ? (`( ${ingreMasPrecio[0].precio} * ${ingreMasPrecio.length} ) = $ ${tmpAdicional}`)
+                    : "$0"
 
+                let fac = {
+                    nombre: nombre.value,
+                    pizza: state.product.title,
+                    precio: state.product.price,
+                    ingredientes: ingredientes.map(e => e.label),
+                    adicional: adicional,
+                    total: state.product.price + tmpAdicional,
+                }
+                console.log(fac);
+                document.getElementById("factura").innerHTML = `<h2>Cliente: ${fac.nombre}</h2><table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="row"></th>
+                    <th scope="col">descripción</th>
+                    <th scope="col">precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Pizza seleccionada</td>
+                    <td>${fac.pizza}, precio: $${fac.precio} </td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Total de ingredientes adicionales</td>
+                    <td>${ingreMasPrecio.length}</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>Valor por cada ingrediente adicional</td>
+                    <td>$ ${precioIndividual}</td>
+                </tr>
+                <tr>
+                    <th scope="row">4</th>
+                    <td>Costo adicional</td>
+                    <td>${fac.adicional}</td>
+                </tr>
+                <tr>
+                    <th scope="row">5</th>
+                    <td>Total a cancelar</td>
+                    <td>$${fac.total}</td>
+                </tr>
+            </tbody>
+        </table>`;
+            }
+        }
+        if (estado === "default") {
+            alert("primero debe calcular el total")
+        }
+        setEstado("default")
     }
 
 
